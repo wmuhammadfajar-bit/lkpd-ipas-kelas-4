@@ -202,7 +202,7 @@ const state = {
   lkpdAnswers:{}, readSet:new Set(),
   accordionOpen:{'ch2p1':0,'ch3p1':0},
   tabActive:{'ch5p2':0},
-  matchingSel:{}, matchingChecked:{}, evalChecked:{}
+  matchingSel:{}, matchingChecked:{}, evalChecked:{}, mcChecked:{}
 };
 
 // ── DESIGN TOKENS (nature palette) ──
@@ -234,9 +234,9 @@ const CHAPTERS = [
     {title:'Bentuk-Bentuk Interaksi Sosial',blocks:[
       {type:'lead',text:'Interaksi sosial terjadi dalam berbagai bentuk dalam kehidupan kita sehari-hari, dari yang sederhana hingga yang kompleks.'},
       {type:'icon-list',items:[
-        {icon:'🤲',color:'#2d8a52',title:'Kerja Sama (Cooperation)',desc:'Beberapa orang bekerja bersama untuk mencapai tujuan yang sama. Contoh: kerja kelompok di sekolah, gotong royong membersihkan lingkungan.'},
-        {icon:'🕊️',color:'#5bc4e8',title:'Akomodasi (Accommodation)',desc:'Usaha untuk mengurangi perbedaan pendapat atau pertentangan agar bisa hidup damai. Contoh: musyawarah untuk mencapai mufakat.'},
-        {icon:'🌏',color:'#3dab6a',title:'Asimilasi (Assimilation)',desc:'Proses penyatuan dua kelompok atau budaya yang berbeda. Contoh: bergabung dalam kegiatan pramuka bersama teman dari daerah lain.'},
+        {icon:'🤲',color:'#2d8a52',title:'Kerja Sama',desc:'Beberapa orang bekerja bersama untuk mencapai tujuan yang sama. Contoh: kerja kelompok di sekolah, gotong royong membersihkan lingkungan.'},
+        {icon:'🕊️',color:'#5bc4e8',title:'Tolong-Menolong',desc:'Saling membantu satu sama lain saat ada yang membutuhkan. Contoh: membantu teman yang jatuh, menolong tetangga yang kesusahan.'},
+        {icon:'🌏',color:'#3dab6a',title:'Musyawarah',desc:'Berdiskusi bersama untuk menyelesaikan masalah atau mengambil keputusan. Contoh: diskusi kelompok di kelas, rapat warga di lingkungan.'},
       ]},
       {type:'callout',icon:'✅',label:'Ingat!',color:'#d4f0e0',borderColor:'#2d8a52',
        text:'Interaksi sosial yang positif membuat kita bisa saling bekerja sama, tolong-menolong, dan menciptakan lingkungan yang harmonis.'},
@@ -331,39 +331,72 @@ const CHAPTERS = [
 ];
 
 const LKPD_ACTIVITIES = [
-  {id:'L1',icon:'🤝',color:'#2d8a52',title:'Aku dan Interaksi Sosialku',desc:'Jawab pertanyaan berdasarkan pemahamanmu!',type:'essay',
+  {id:'L1',icon:'🤝',color:'#2d8a52',title:'Aku dan Interaksi Sosialku',desc:'Pilih jawaban yang paling tepat!',type:'mc',
    questions:[
-    {id:'q1',num:1,text:'Jelaskan apa yang dimaksud dengan interaksi sosial dengan bahasamu sendiri!',rows:3},
-    {id:'q2',num:2,text:'Sebutkan dan jelaskan 2 syarat terjadinya interaksi sosial!',rows:4},
-    {id:'q3',num:3,text:'Ceritakan satu pengalaman interaksi sosialmu di sekolah! Dengan siapa dan apa yang dilakukan?',rows:4},
-    {id:'q4',num:4,text:'Menurut kamu, mengapa manusia perlu berinteraksi sosial dengan orang lain?',rows:3},
+    {id:'q1',num:1,text:'Apa yang dimaksud dengan interaksi sosial?',
+     opts:['A. Kegiatan belajar sendiri di rumah','B. Hubungan timbal balik antara dua orang atau lebih','C. Bermain tanpa teman','D. Membaca buku di perpustakaan'],correct:'B'},
+    {id:'q2',num:2,text:'Syarat utama terjadinya interaksi sosial adalah...',
+     opts:['A. Harus bertemu langsung','B. Harus satu sekolah','C. Adanya kontak sosial dan komunikasi','D. Harus saling kenal terlebih dahulu'],correct:'C'},
+    {id:'q3',num:3,text:'Contoh interaksi sosial di sekolah adalah...',
+     opts:['A. Tidur di kelas','B. Belajar kelompok bersama teman','C. Bermain HP sendirian','D. Diam saat istirahat'],correct:'B'},
+    {id:'q4',num:4,text:'Mengapa manusia perlu berinteraksi sosial?',
+     opts:['A. Karena manusia suka keramaian','B. Karena disuruh guru','C. Karena manusia adalah makhluk sosial yang saling membutuhkan','D. Karena tidak ada kegiatan lain'],correct:'C'},
+    {id:'q5',num:5,text:'Manakah yang termasuk interaksi sosial TIDAK langsung?',
+     opts:['A. Bercakap-cakap di kelas','B. Bermain bersama di halaman','C. Mengirim pesan lewat telepon','D. Diskusi kelompok tatap muka'],correct:'C'},
    ]},
-  {id:'L2',icon:'🏫',color:'#5bc4e8',title:'Peran dan Tanggung Jawabku',desc:'Isi tabel peran dan daftar hak-kewajibanmu!',type:'table-fill',
+  {id:'L2',icon:'🏫',color:'#5bc4e8',title:'Peran dan Tanggung Jawabku',desc:'Pilih peran, hak, dan kewajiban yang benar!',type:'mc-table',
    tableRows:[
-    {role:'Siswa',keys:['siswa_peran','siswa_tanggung']},
-    {role:'Guru',keys:['guru_peran','guru_tanggung']},
-    {role:'Kepala Sekolah',keys:['kepsek_peran','kepsek_tanggung']},
-   ],hakKeys:['hak1','hak2','hak3','hak4'],kwjbKeys:['kw1','kw2','kw3','kw4']},
-  {id:'L3',icon:'📋',color:'#e8913d',title:'Aturan di Sekitarku',desc:'Temukan peraturan sekolahmu dan cocokkan norma!',type:'rules-matching',
-   ruleKeys:['r1','r2','r3','r4','r5'],
+    {role:'Siswa',
+     peranQ:'Apa peran utama seorang siswa di sekolah?',
+     peranOpts:['A. Mengajar teman-teman','B. Belajar dengan sungguh-sungguh dan menaati peraturan','C. Memimpin rapat guru','D. Menjaga gerbang sekolah'],peranCorrect:'B',
+     tanggungQ:'Apa tanggung jawab siswa terhadap tugas sekolah?',
+     tanggungOpts:['A. Mengerjakan tugas hanya jika mau','B. Menyalin jawaban teman','C. Mengerjakan PR dengan jujur dan mengumpulkan tepat waktu','D. Meminta orang tua mengerjakan tugas'],tanggungCorrect:'C'},
+    {role:'Guru',
+     peranQ:'Apa peran utama seorang guru di sekolah?',
+     peranOpts:['A. Bermain bersama siswa','B. Mendidik dan membimbing siswa dalam belajar','C. Menjual buku pelajaran','D. Membersihkan kelas setiap hari'],peranCorrect:'B',
+     tanggungQ:'Apa tanggung jawab guru terhadap siswa?',
+     tanggungOpts:['A. Memberi nilai tanpa mengajar','B. Hanya hadir saat ujian','C. Memberikan motivasi dan menjadi teladan yang baik','D. Mengabaikan siswa yang kesulitan'],tanggungCorrect:'C'},
+   ],
+   hakQs:[
+    {id:'hak1',q:'Hak siswa yang berhubungan dengan pengajaran adalah...',opts:['A. Hak memerintah guru','B. Hak mendapatkan pengajaran yang baik dari guru','C. Hak tidak masuk sekolah','D. Hak menentukan kurikulum'],correct:'B'},
+    {id:'hak2',q:'Hak siswa untuk diperlakukan secara adil berarti...',opts:['A. Selalu mendapat nilai bagus','B. Boleh melanggar aturan','C. Tidak dibeda-bedakan oleh guru dan teman','D. Mendapat hadiah setiap hari'],correct:'C'},
+   ],
+   kwjbQs:[
+    {id:'kw1',q:'Kewajiban siswa terkait waktu sekolah adalah...',opts:['A. Boleh datang kapan saja','B. Datang ke sekolah tepat waktu sebelum bel','C. Pulang lebih awal dari jadwal','D. Masuk kelas saat jam istirahat'],correct:'B'},
+    {id:'kw2',q:'Kewajiban siswa dalam hal belajar adalah...',opts:['A. Belajar hanya jika ada ujian','B. Menyontek saat ulangan','C. Mengerjakan tugas dengan sungguh-sungguh dan jujur','D. Meminta kakak mengerjakan PR'],correct:'C'},
+   ]},
+  {id:'L3',icon:'📋',color:'#e8913d',title:'Aturan di Sekitarku',desc:'Jawab soal peraturan dan cocokkan norma!',type:'rules-matching',
+   mcQs:[
+    {id:'rm1',q:'Tujuan peraturan di sekolah adalah...',opts:['A. Mempersulit kehidupan siswa','B. Menciptakan ketertiban dan kenyamanan bersama','C. Menguntungkan kepala sekolah','D. Membuat siswa takut'],correct:'B'},
+    {id:'rm2',q:'Larangan berkelahi di sekolah termasuk peraturan tentang...',opts:['A. Kebersihan','B. Waktu','C. Keamanan dan keselamatan','D. Seragam'],correct:'C'},
+    {id:'rm3',q:'Jika kamu melihat sampah di kelas, apa yang seharusnya dilakukan?',opts:['A. Membiarkannya saja','B. Menyuruh teman memungutnya','C. Memungut dan membuang ke tempat sampah','D. Menendangnya ke luar kelas'],correct:'C'},
+   ],
    matching:{
     pairs:[
      {norma:'Norma Agama',correct:'C'},{norma:'Norma Kesusilaan',correct:'D'},
      {norma:'Norma Kesopanan',correct:'A'},{norma:'Norma Hukum',correct:'B'},
     ],
     choices:[
-     {letter:'A',text:'Menyapa tetangga saat bertemu'},
+     {letter:'A',text:'Menyapa tetangga saat bertemu di jalan'},
      {letter:'B',text:'Mematuhi rambu-rambu lalu lintas'},
-     {letter:'C',text:'Menjalankan ibadah sesuai agama'},
-     {letter:'D',text:'Tidak berbohong kepada siapapun'},
+     {letter:'C',text:'Menjalankan ibadah sesuai agama masing-masing'},
+     {letter:'D',text:'Merasa malu dan bersalah jika berbuat curang'},
     ]
    }},
-  {id:'L4',icon:'💡',color:'#8b5cf6',title:'Interaksi Sosial Positif',desc:'Baca situasi dan berikan responsmu yang terbaik!',type:'scenario',
+  {id:'L4',icon:'💡',color:'#8b5cf6',title:'Interaksi Sosial Positif',desc:'Baca situasi dan pilih tindakan terbaik!',type:'mc-scenario',
    scenarios:[
-    {id:'s1',label:'Situasi 1',text:'Temanmu kesulitan memahami pelajaran matematika dan tampak sedih. Kamu sudah mengerti materi tersebut.',q:'Apa yang akan kamu lakukan dan mengapa?'},
-    {id:'s2',label:'Situasi 2',text:'Saat kerja bakti di RT, ada warga yang tidak ikut dan hanya menonton dari pinggir jalan.',q:'Menurutmu apa yang sebaiknya dilakukan?'},
-    {id:'s3',label:'Situasi 3',text:'Kamu dan temanmu berbeda pendapat tentang tugas kelompok. Temanmu bersikeras idenya yang paling benar.',q:'Bagaimana cara terbaik menyelesaikan perbedaan ini?'},
-    {id:'s4',label:'Situasi 4',text:'Seorang teman baru pindah ke kelasmu dan terlihat malu-malu dan belum punya teman.',q:'Apa yang akan kamu lakukan untuk membuat ia merasa nyaman?'},
+    {id:'s1',label:'Situasi 1',text:'Temanmu kesulitan memahami pelajaran matematika dan tampak sedih. Kamu sudah mengerti materi tersebut.',
+     q:'Apa tindakan terbaik yang kamu lakukan?',
+     opts:['A. Membiarkannya karena itu bukan urusanmu','B. Mengejek karena tidak bisa','C. Menawarkan bantuan dan menjelaskan dengan sabar','D. Melaporkan ke guru agar dimarahi'],correct:'C'},
+    {id:'s2',label:'Situasi 2',text:'Saat kerja bakti di RT, ada warga yang tidak ikut dan hanya menonton dari pinggir jalan.',
+     q:'Apa yang sebaiknya dilakukan warga tersebut?',
+     opts:['A. Terus menonton dan tidak perlu ikut','B. Ikut bergabung membantu karena gotong royong adalah kewajiban bersama','C. Pulang ke rumah dan tidur','D. Menyuruh orang lain yang ikut kerja bakti'],correct:'B'},
+    {id:'s3',label:'Situasi 3',text:'Kamu dan temanmu berbeda pendapat tentang tugas kelompok. Temanmu bersikeras idenya yang paling benar.',
+     q:'Cara terbaik menyelesaikan perbedaan ini adalah...',
+     opts:['A. Bertengkar hingga ada yang menang','B. Diam dan menerima semua ide temanmu','C. Musyawarah bersama untuk mencari solusi terbaik','D. Membubarkan kelompok'],correct:'C'},
+    {id:'s4',label:'Situasi 4',text:'Seorang teman baru pindah ke kelasmu dan terlihat malu-malu dan belum punya teman.',
+     q:'Tindakan yang mencerminkan interaksi sosial positif adalah...',
+     opts:['A. Mengabaikannya karena belum kenal','B. Menunggu dia menyapa lebih dulu','C. Mendekati, menyapa, dan mengajaknya bergabung','D. Menertawakannya karena pemalu'],correct:'C'},
    ]},
   {id:'L5',icon:'🧠',color:'#f26b6b',title:'Evaluasi & Refleksi',desc:'Uji pemahamanmu dan refleksikan pembelajaran!',type:'evaluation',
    statements:[
@@ -384,104 +417,13 @@ const LKPD_ACTIVITIES = [
    ]},
 ];
 
-// ── KRITERIA PENILAIAN OTOMATIS UNTUK ESSAY / ISIAN / SKENARIO ──
-// min = jumlah karakter minimal agar jawaban dianggap "diisi dengan sungguh-sungguh"
-// kw  = kata kunci unik per soal; sinonim/variasi sudah disertakan
-// syn = [opsional] sinonim tambahan yang dianggap setara kata kunci
-const ANSWER_KEYWORDS = {
-  L1:{
-    // [PERBAIKAN 1] kw berbeda per soal + [PERBAIKAN 5] sinonim diperluas
-    q1:{min:30,kw:['interaksi','hubungan','timbal balik','mempengaruhi','pengaruh','saling','sosial','komunikasi','masyarakat','berhubungan']},
-    q2:{min:30,kw:['kontak sosial','komunikasi','kontak','langsung','tidak langsung','tatap muka','pesan','telepon','syarat','isyarat']},
-    q3:{min:35,kw:['teman','guru','sekolah','kelas','belajar','bermain','membantu','bekerja sama','kerja sama','tugas','kegiatan','main','cerita','pengalaman','bersama']},
-    q4:{min:25,kw:['makhluk sosial','membantu','bantu','tolong','menolong','sendiri','bekerja sama','kerja sama','membutuhkan','memerlukan','butuh','perlu','saling','hidup','bertahan']},
-  },
-  L2:{
-    // [PERBAIKAN 1] siswa_peran vs siswa_tanggung kini berbeda
-    siswa_peran:{min:15,kw:['belajar','tekun','rajin','aktif','partisipasi','ikut','hormat','bersih','tertib','disiplin','sungguh','giat','semangat']},
-    siswa_tanggung:{min:15,kw:['tugas','pr','piket','ujian','nilai','selesaikan','kumpul','tepat waktu','jujur','tidak mencontek','tanggung jawab','kewajiban','patuh']},
-    // [PERBAIKAN 1] guru_peran vs guru_tanggung kini berbeda
-    guru_peran:{min:15,kw:['mengajar','ajar','mendidik','didik','membimbing','bimbing','memberikan','ilmu','pelajaran','materi','menerangkan','mengasuh']},
-    guru_tanggung:{min:15,kw:['motivasi','disiplin','contoh','teladan','perilaku','komunikasi','orang tua','laporan','evaluasi','nilai','mendampingi','mendukung']},
-    // [PERBAIKAN 1] kepsek_peran vs kepsek_tanggung kini berbeda
-    kepsek_peran:{min:15,kw:['memimpin','pimpin','mengelola','kelola','mengatur','atur','sekolah','kebijakan','program','keputusan','koordinasi','mengawasi']},
-    kepsek_tanggung:{min:15,kw:['awasi','pengawasan','kemajuan','perkembangan','hubungan','masyarakat','tanggung jawab','laporan','mutu','kualitas','fasilitas','anggaran']},
-    // [PERBAIKAN 1] hak1-4 berbeda per baris: hak belajar, hak perlakuan adil, hak fasilitas, hak berpendapat
-    hak1:{min:10,kw:['belajar','ilmu','pengetahuan','pelajaran','diajar','mendapat','pengajaran','sekolah']},
-    hak2:{min:10,kw:['adil','perlakuan','sama','setara','tidak dibeda-bedakan','tidak diskriminasi','merata','fair']},
-    hak3:{min:10,kw:['fasilitas','sarana','prasarana','ruang','buku','perpustakaan','lapangan','alat','laboratorium']},
-    hak4:{min:10,kw:['pendapat','usul','saran','bicara','suara','aspirasi','ide','gagasan','berpendapat']},
-    // [PERBAIKAN 1] kw1-4 berbeda per baris: kewajiban waktu, kewajiban bersih, kewajiban hormat, kewajiban belajar
-    kw1:{min:10,kw:['tepat waktu','disiplin waktu','datang','hadir','tidak terlambat','on time','masuk','berangkat']},
-    kw2:{min:10,kw:['bersih','kebersihan','sampah','piket','rapih','rapi','lingkungan','menjaga','merawat']},
-    kw3:{min:10,kw:['hormat','menghormati','sopan','santun','salam','beri salam','menghargai','patuh','taat']},
-    kw4:{min:10,kw:['belajar','tugas','pr','mengerjakan','sungguh','tekun','rajin','jujur','tidak mencontek','ujian']},
-  },
-  L4:{
-    // [PERBAIKAN 5] sinonim diperluas per skenario
-    s1:{min:25,kw:['membantu','bantu','menolong','tolong','menjelaskan','jelaskan','ajari','ajar','bersama','sabar','mengajari','tunjukkan','dukung']},
-    s2:{min:25,kw:['mengajak','ajak','ikut','serta','gotong royong','kerja bakti','mengingatkan','ingatkan','bantu','menyapa','sapa','bergabung','bersama']},
-    s3:{min:25,kw:['musyawarah','diskusi','bicara','berbicara','mendengar','dengar','menghargai','hargai','toleransi','toleran','sabar','maaf','minta maaf','damai','kompromi']},
-    s4:{min:25,kw:['menyapa','sapa','ramah','berteman','teman','mengajak','ajak','kenalan','perkenalan','menyambut','sambut','baik hati','peduli','perhatian']},
-  },
-  // [PERBAIKAN 3] Refleksi diri L5 sekarang ikut dinilai
-  L5:{
-    rf1:{min:20,kw:['belajar','pelajari','tahu','mengetahui','memahami','paham','interaksi','sosial','norma','peraturan','aturan','kerja sama','gotong royong']},
-    rf2:{min:20,kw:['menarik','berkesan','suka','senang','tertarik','bagian','hal','materi','cerita','contoh','kegiatan','pengalaman']},
-    rf3:{min:20,kw:['sekolah','kelas','teman','guru','bantu','tolong','bersama','hormat','sapa','sopan','kerja sama','piket','belajar','disiplin']},
-    rf4:{min:20,kw:['masyarakat','lingkungan','tetangga','gotong royong','kerja bakti','membantu','sapa','hormat','rukun','peduli','bersih']},
-  },
-};
-
-// [PERBAIKAN 5] Normalisasi teks: ubah variasi imbuhan umum ke bentuk dasar
-function normalizeText(text){
-  return (text||'').trim().toLowerCase()
-    .replace(/me(ng|ny|m|n)?/g,'') // awalan me-
-    .replace(/ber/g,'')             // awalan ber-
-    .replace(/kan$|an$|i$/g,'')     // akhiran -kan, -an, -i (sederhana)
-    .replace(/\s+/g,' ');
-}
-// Cek apakah kata kunci cocok di teks asli ATAU teks ternormalisasi
-function kwMatch(text, kw){
-  const t = text.toLowerCase();
-  const tn = normalizeText(text);
-  const k = kw.toLowerCase();
-  const kn = normalizeText(kw);
-  return t.includes(k) || tn.includes(kn);
-}
-
-// Hitung status & pesan untuk satu jawaban isian, berdasarkan panjang minimal dan JUMLAH kata kunci
-function itemFeedback(text, rule){
-  if(!rule) return {pct:100, level:'good', msg:''};
-  const t=(text||'').trim();
-  if(t.length < rule.min) return {pct:0, level:'empty', msg:`❌ Belum diisi / masih terlalu singkat (minimal ${rule.min} karakter).`};
-  // [PERBAIKAN 5] Gunakan kwMatch untuk mendeteksi sinonim
-  const hitCount = rule.kw.filter(k=>kwMatch(t,k)).length;
-  const total = rule.kw.length;
-  // [PERBAIKAN 6] Skor bertingkat: 0 kw = 20 (bukan 40), lalu naik bertahap
-  if(hitCount === 0) return {pct:20, level:'weak',  msg:`🔶 Sudah diisi, tapi belum ada kata kunci penting. Perkaya jawabanmu! (0/${total} kata kunci)`};
-  const ratio = hitCount / total;
-  if(ratio < 0.34) return {pct:55, level:'check', msg:`🔸 Lumayan! Ada ${hitCount} kata kunci ditemukan. Coba tambah penjelasan lagi. (${hitCount}/${total})`};
-  if(ratio < 0.67) return {pct:80, level:'good',  msg:`🌿 Bagus! Jawabanmu sudah memuat beberapa poin penting. (${hitCount}/${total} kata kunci)`};
-  return                   {pct:100,level:'great', msg:`✅ Luar biasa! Jawabanmu sangat lengkap! (${hitCount}/${total} kata kunci)`};
-}
-function itemScore(text, rule){ return itemFeedback(text, rule).pct; }
-// Chip kecil di bawah tiap kotak isian, memberi tahu siswa apakah jawabannya sudah memadai
-function feedbackChip(actId, key, val){
-  const rule=(ANSWER_KEYWORDS[actId]||{})[key];
-  const fb=itemFeedback(val, rule);
-  const bg = fb.level==='great'?'#d4f0e0':fb.level==='good'?'#e8f5ee':fb.level==='check'?'#fff3cc':fb.level==='weak'?'#fff0d0':'#ffe3e3';
-  const cl = fb.level==='great'?'#1a5c35':fb.level==='good'?'#2d6e40':fb.level==='check'?'#7a4e00':fb.level==='weak'?'#8b4000':'#8b0000';
-  return `<div id="fb-${actId}-${key}" style="margin-top:6px;font-size:12.5px;font-weight:700;color:${cl};background:${bg};border-radius:8px;padding:5px 10px;display:inline-block;font-family:'Poppins',sans-serif">${fb.msg}</div>`;
-}
-
 // ── HELPERS ──
 const LS_KEY = 'ipas_lkpd_alam_v1';
-function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({lkpdAnswers:state.lkpdAnswers,readSet:Array.from(state.readSet),matchingSel:state.matchingSel,matchingChecked:state.matchingChecked,evalChecked:state.evalChecked}));}catch(e){}}
-function lsLoad(){try{const raw=localStorage.getItem(LS_KEY);if(!raw)return;const d=JSON.parse(raw);if(d.lkpdAnswers)state.lkpdAnswers=d.lkpdAnswers;if(d.readSet)state.readSet=new Set(d.readSet);if(d.matchingSel)state.matchingSel=d.matchingSel;if(d.matchingChecked)state.matchingChecked=d.matchingChecked;if(d.evalChecked)state.evalChecked=d.evalChecked;}catch(e){}}
+function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({lkpdAnswers:state.lkpdAnswers,readSet:Array.from(state.readSet),matchingSel:state.matchingSel,matchingChecked:state.matchingChecked,evalChecked:state.evalChecked,mcChecked:state.mcChecked}));}catch(e){}}
+function lsLoad(){try{const raw=localStorage.getItem(LS_KEY);if(!raw)return;const d=JSON.parse(raw);if(d.lkpdAnswers)state.lkpdAnswers=d.lkpdAnswers;if(d.readSet)state.readSet=new Set(d.readSet);if(d.matchingSel)state.matchingSel=d.matchingSel;if(d.matchingChecked)state.matchingChecked=d.matchingChecked;if(d.evalChecked)state.evalChecked=d.evalChecked;if(d.mcChecked)state.mcChecked=d.mcChecked;}catch(e){}}
 function showDeleteConfirm(){const el=document.getElementById('delete-confirm');if(el)el.style.display='block';}
 function hideDeleteConfirm(){const el=document.getElementById('delete-confirm');if(el)el.style.display='none';}
-function lsClear(){try{localStorage.removeItem(LS_KEY);}catch(e){}state.lkpdAnswers={};state.readSet=new Set();state.matchingSel={};state.matchingChecked={};state.evalChecked={};state.accordionOpen={'ch2p1':0,'ch3p1':0};state.tabActive={'ch5p2':0};goTo('home');}
+function lsClear(){try{localStorage.removeItem(LS_KEY);}catch(e){}state.lkpdAnswers={};state.readSet=new Set();state.matchingSel={};state.matchingChecked={};state.evalChecked={};state.mcChecked={};state.accordionOpen={'ch2p1':0,'ch3p1':0};state.tabActive={'ch5p2':0};goTo('home');}
 
 function goTo(name,params={}){state.page=name;state.params=params;render();window.scrollTo(0,0);setTimeout(()=>{const sc=document.getElementById('content-scroll');if(sc)sc.scrollTop=0;},0);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
@@ -492,34 +434,40 @@ function calcScore(actId){
   const act = LKPD_ACTIVITIES.find(a=>a.id===actId);
   if(!act) return {score:0,total:100,pct:0};
   const ans = state.lkpdAnswers[actId]||{};
-  if(act.type==='essay'){
-    const scores = act.questions.map(q=>itemScore(ans[q.id], ANSWER_KEYWORDS.L1[q.id]));
-    const pct = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+
+  if(act.type==='mc'){
+    const correct=act.questions.filter(q=>ans[q.id]===q.correct).length;
+    const pct=Math.round((correct/act.questions.length)*100);
     return {score:pct,total:100,pct};
   }
-  if(act.type==='table-fill'){
-    const allKeys=[...act.tableRows.flatMap(r=>r.keys),...act.hakKeys,...act.kwjbKeys];
-    const scores = allKeys.map(k=>itemScore(ans[k], ANSWER_KEYWORDS.L2[k]));
-    const pct = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  if(act.type==='mc-table'){
+    const allQs=[
+      ...act.tableRows.flatMap(r=>[{id:r.role+'_peran',correct:r.peranCorrect},{id:r.role+'_tanggung',correct:r.tanggungCorrect}]),
+      ...act.hakQs.map(q=>({id:q.id,correct:q.correct})),
+      ...act.kwjbQs.map(q=>({id:q.id,correct:q.correct})),
+    ];
+    const correct=allQs.filter(q=>ans[q.id]===q.correct).length;
+    const pct=Math.round((correct/allQs.length)*100);
     return {score:pct,total:100,pct};
   }
   if(act.type==='rules-matching'){
+    const mcCorrect=act.mcQs.filter(q=>ans[q.id]===q.correct).length;
     const sel=state.matchingSel[actId]||{};
-    const correct=act.matching.pairs.filter((p,i)=>sel[i]===p.correct).length;
-    const pct=Math.round((correct/act.matching.pairs.length)*100);
+    const matchCorrect=act.matching.pairs.filter((p,i)=>sel[i]===p.correct).length;
+    const total=act.mcQs.length+act.matching.pairs.length;
+    const pct=Math.round(((mcCorrect+matchCorrect)/total)*100);
     return {score:pct,total:100,pct};
   }
-  if(act.type==='scenario'){
-    const scores = act.scenarios.map(s=>itemScore(ans[s.id], ANSWER_KEYWORDS.L4[s.id]));
-    const pct = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+  if(act.type==='mc-scenario'){
+    const correct=act.scenarios.filter(s=>ans[s.id]===s.correct).length;
+    const pct=Math.round((correct/act.scenarios.length)*100);
     return {score:pct,total:100,pct};
   }
   if(act.type==='evaluation'){
-    // [PERBAIKAN 3] Gabungkan skor soal benar/salah (70%) + refleksi diri (30%)
     const correct=act.statements.filter(s=>ans[s.id]!==undefined&&ans[s.id]===s.ans).length;
     const evalPct=Math.round((correct/act.statements.length)*100);
-    const rfScores=act.reflections.map(r=>itemScore(ans[r.id], ANSWER_KEYWORDS.L5[r.id]));
-    const rfPct=Math.round(rfScores.reduce((a,b)=>a+b,0)/rfScores.length);
+    const rfFilled=act.reflections.filter(r=>(ans[r.id]||'').trim().length>=10).length;
+    const rfPct=Math.round((rfFilled/act.reflections.length)*100);
     const pct=Math.round(evalPct*0.7 + rfPct*0.3);
     return {score:pct,total:100,pct,evalPct,rfPct};
   }
@@ -533,8 +481,8 @@ function calcRataRata(){
   const totalW=LKPD_ACTIVITIES.reduce((s,a)=>s+(LKPD_WEIGHTS[a.id]||20),0);
   return Math.round(scores.reduce((s,v,i)=>s+v.pct*(LKPD_WEIGHTS[LKPD_ACTIVITIES[i].id]||20),0)/totalW);
 }
-function scoreColor(pct){ if(pct>=90)return '#2d8a52'; if(pct>=75)return '#0e90c0'; if(pct>=60)return '#c97a00'; return '#c93030'; }
-function scoreLabel(pct){ if(pct>=90)return 'A – Sangat Baik 🌟'; if(pct>=75)return 'B – Baik 👍'; if(pct>=60)return 'C – Cukup 💪'; return 'D – Perlu Bimbingan 📖'; }
+function scoreColor(pct){ if(pct>=85)return '#2d8a52'; if(pct>=70)return '#0e90c0'; if(pct>=55)return '#c97a00'; return '#c93030'; }
+function scoreLabel(pct){ if(pct>=85)return 'A – Sangat Baik 🌟'; if(pct>=70)return 'B – Baik 👍'; if(pct>=55)return 'C – Cukup 💪'; return 'D – Yuk Coba Lagi! 📖'; }
 function nilaiBadgeEl(actId, pct, c){
   return `<div id="nilai-badge-${actId}" style="display:flex;align-items:center;gap:10px;background:${c}18;border:2.5px solid ${c}55;border-radius:16px;padding:10px 16px;margin-top:14px">
     <div style="width:52px;height:52px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px ${c}55">
@@ -743,82 +691,106 @@ function renderTabSteps(block){
 }
 
 // ── LKPD RENDERERS ──
-function renderLkpdEssay(act){
-  const ans=getAns(act.id);
+
+// Helper: render satu soal pilihan ganda
+function renderMcQ(actId, q, color, num){
+  const ans=state.lkpdAnswers[actId]||{};
+  const chosen=ans[q.id];
+  const checked=state.mcChecked[actId]||state.evalChecked[actId]||false;
+  const isOk=checked&&chosen===q.correct;
+  const isBad=checked&&chosen&&chosen!==q.correct;
+  return `
+    <div style="background:#fff;border-radius:20px;padding:18px 20px;box-shadow:0 4px 18px rgba(45,138,82,.1);border:2.5px solid ${isOk?'#2d8a52':isBad?'#c93030':color+'35'}">
+      <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
+        <div style="width:34px;height:34px;border-radius:12px;background:${color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;flex-shrink:0;font-family:'Poppins',sans-serif">${num}</div>
+        <div style="font-weight:800;color:#0f2d1a;font-size:15px;line-height:1.65">${q.q||q.text}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${q.opts.map(opt=>{
+          const letter=opt[0];
+          const isSel=chosen===letter;
+          const optOk=checked&&letter===q.correct;
+          const optBad=checked&&isSel&&letter!==q.correct;
+          const bg=optOk?'#c8f0d8':optBad?'#ffd6d6':isSel?color+'18':'#f7fdf9';
+          const border=optOk?'#2d8a52':optBad?'#c93030':isSel?color:'#c8e6d4';
+          const icon=optOk?'✅':optBad?'❌':'';
+          return `<button class="btn-press" onclick="saveMcAns('${actId}','${q.id}','${letter}')"
+            style="display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:14px;border:2.5px solid ${border};background:${bg};cursor:pointer;text-align:left;font-family:'Poppins',sans-serif;transition:all .2s;width:100%">
+            <span style="width:28px;height:28px;border-radius:9px;background:${isSel?color:border+'40'};color:${isSel?'#fff':'#0f2d1a'};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0">${letter}</span>
+            <span style="font-size:14.5px;color:#0f2d1a;font-weight:700;flex:1;line-height:1.5">${opt.slice(3)}</span>
+            <span style="font-size:18px">${icon}</span>
+          </button>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+function renderLkpdMc(act){
+  const mascot=MASCOT_INFO.caterpillar;
+  const checked=state.mcChecked[act.id]||false;
+  const sc=calcScore(act.id);
+  const ans=state.lkpdAnswers[act.id]||{};
+  const answered=act.questions.filter(q=>ans[q.id]).length;
+  const correct=checked?act.questions.filter(q=>ans[q.id]===q.correct).length:0;
   return `
     <div style="display:flex;flex-direction:column;gap:16px">
       <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:4px">
-        <div style="width:56px;flex-shrink:0">${SVG.caterpillar}</div>
-        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">${(()=>{const m=MASCOT_INFO[['caterpillar','bee','bird','frog','caterpillar'][LKPD_ACTIVITIES.indexOf(act)%5]]||MASCOT_INFO.caterpillar;return m.emoji+' <b style="color:'+act.color+'">'+m.name+' bilang:</b>';})()}" Jawab dengan kalimatmu sendiri ya! Tidak perlu sama persis dengan buku!"</div>
+        <div style="width:52px;flex-shrink:0">${SVG.caterpillar}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">${mascot.emoji} <b style="color:${act.color}">${mascot.name} bilang:</b> "Pilih satu jawaban yang paling benar, lalu klik Cek Jawaban ya!"</div>
       </div>
-      ${act.questions.map(q=>`
-        <div style="background:#fff;border-radius:20px;padding:20px;box-shadow:0 4px 18px rgba(45,138,82,.1);border:2.5px solid ${act.color}35;position:relative;overflow:hidden">
-          <div style="position:absolute;right:-8px;top:-8px;width:40px;opacity:.07">${SVG.flower}</div>
-          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
-            <div style="width:36px;height:36px;border-radius:12px;background:${act.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0;font-family:'Poppins',sans-serif;box-shadow:0 4px 12px ${act.color}50">${q.num}</div>
-            <div style="font-weight:800;color:#0f2d1a;font-size:15px;line-height:1.65">${q.text}</div>
-          </div>
-          <textarea rows="${q.rows}" placeholder="✍️ Tuliskan jawabanmu di sini..."
-            oninput="saveAns('${act.id}','${q.id}',this.value)"
-            onfocus="this.style.borderColor='${act.color}'"
-            onblur="this.style.borderColor='${act.color}40'"
-            style="width:100%;border:2.5px solid ${act.color}40;border-radius:14px;padding:13px 15px;font-size:14.5px;resize:vertical;outline:none;line-height:1.75;background:#f4fdf7;transition:border-color .2s;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[q.id]||'')}</textarea>
-          ${feedbackChip(act.id,q.id,ans[q.id]||'')}
-        </div>`).join('')}
+      <div style="background:#fff8dc;border-radius:14px;padding:12px 16px;border:2px solid #f9c84660;font-size:14px;color:#4a2d00;font-weight:700;margin-bottom:4px">
+        📌 <b>Petunjuk:</b> Tekan salah satu pilihan jawaban (A, B, C, atau D), lalu tekan tombol <b>Cek Jawaban</b> untuk melihat hasilmu!
+      </div>
+      ${act.questions.map((q,i)=>renderMcQ(act.id,q,act.color,i+1)).join('')}
+      <button class="btn-press" onclick="checkMc('${act.id}')"
+        style="background:${act.color};color:#fff;border:none;border-radius:16px;padding:14px 30px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}50">
+        Cek Jawaban ✓
+      </button>
+      ${checked?`<div style="background:${sc.pct>=80?'#c8f0d8':sc.pct>=60?'#fff3cc':'#ffd6d6'};border-radius:16px;padding:15px 18px;font-weight:800;color:#0f2d1a;font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${sc.pct>=80?'#2d8a52':sc.pct>=60?'#c97a00':'#c93030'}50;display:flex;align-items:center;gap:14px">
+        ${progressRing(sc.pct,sc.pct>=80?'#2d8a52':sc.pct>=60?'#c97a00':'#c93030',52)}
+        <div><div style="font-size:17px">${correct}/${act.questions.length} benar</div><div style="font-size:14px;margin-top:3px">${sc.pct>=80?'🎉 Luar biasa!':sc.pct>=60?'👍 Bagus, terus semangat!':'💪 Yuk coba lagi!'}</div></div>
+      </div>`:''}
       ${nilaiBadge(act.id)}
     </div>`;
 }
 
-function renderLkpdTableFill(act){
-  const ans=getAns(act.id);
+function renderLkpdMcTable(act){
+  const ans=state.lkpdAnswers[act.id]||{};
+  const checked=state.evalChecked[act.id]||false;
+  let qNum=0;
+  const renderRow=(id,q,opts,correct)=>{
+    qNum++;
+    return renderMcQ(act.id,{id,q,opts,correct},act.color,qNum);
+  };
   return `
-    <div>
-      <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌿 A. Tabel Peran Warga Sekolah</div>
-      <div style="border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.12);margin-bottom:22px;border:2.5px solid ${act.color}40">
-        <div style="display:grid;grid-template-columns:1.2fr 1.5fr 1.5fr;background:${act.color}">
-          ${['Warga Sekolah','Peran / Tugas','Tanggung Jawab'].map(h=>`<div style="padding:13px 14px;color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.2)">${h}</div>`).join('')}
-        </div>
-        ${act.tableRows.map((row,i)=>`
-          <div style="display:grid;grid-template-columns:1.2fr 1.5fr 1.5fr;background:${i%2===0?'#edfaf3':'#fff'}">
-            <div style="padding:11px 14px;font-weight:800;color:${act.color};font-size:14px;display:flex;align-items:center;font-family:'Poppins',sans-serif">${row.role}</div>
-            ${row.keys.map(k=>`
-              <div style="padding:7px">
-                <textarea rows="2" placeholder="Isi di sini..." oninput="saveAns('${act.id}','${k}',this.value)"
-                  style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:8px 10px;font-size:15px;resize:none;outline:none;background:#fff;line-height:1.6;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[k]||'')}</textarea>
-                ${feedbackChip(act.id,k,ans[k]||'')}
-              </div>`).join('')}
-          </div>`).join('')}
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25">
+        <div style="width:52px;flex-shrink:0">${SVG.bee}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐝 <b style="color:${act.color}">Beby bilang:</b> "Pilih jawaban yang benar tentang peran, hak, dan kewajiban!"</div>
       </div>
-      <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌻 B. Hak dan Kewajiban Saya sebagai Siswa</div>
-      <div style="background:linear-gradient(to right,#dff4fc,#edfaf3);border-radius:14px;padding:12px 16px;margin-bottom:12px;border:2px solid #5bc4e840;font-size:14px;color:#073d5c;font-weight:700;line-height:1.7">
-        💡 <b>Petunjuk:</b> Tuliskan masing-masing 4 hak dan 4 kewajiban kamu sebagai siswa di sekolah.<br>
-        <span style="color:#0e5c80">Hak = sesuatu yang <b>kamu terima/dapatkan</b> &nbsp;|&nbsp; Kewajiban = sesuatu yang <b>harus kamu lakukan</b></span>
+      <div style="background:#fff8dc;border-radius:14px;padding:12px 16px;border:2px solid #f9c84660;font-size:14px;color:#4a2d00;font-weight:700;margin-bottom:4px">
+        📌 <b>Petunjuk:</b> Tekan pilihan jawaban yang benar untuk setiap soal, lalu tekan <b>Cek Jawaban</b>!
       </div>
-      <div style="border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.12);border:2.5px solid ${act.color}40">
-        <div style="display:grid;grid-template-columns:1fr 1fr;background:${act.color}">
-          ${['HAK SAYA','KEWAJIBAN SAYA'].map(h=>`<div style="padding:13px 14px;color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.2)">${h}</div>`).join('')}
-        </div>
-        ${[
-          ['Hak mendapatkan pengajaran yang baik dari guru','Kewajiban datang tepat waktu ke sekolah'],
-          ['Hak mendapat perlakuan adil dari guru dan teman','Kewajiban mengerjakan tugas dan PR dengan jujur'],
-          ['Hak menggunakan fasilitas sekolah (buku, lapangan, dll)','Kewajiban menjaga kebersihan dan ketertiban sekolah'],
-          ['Hak menyampaikan pendapat saat diskusi di kelas','Kewajiban menghormati guru, staf, dan sesama teman'],
-        ].map((hints,i)=>`
-          <div style="display:grid;grid-template-columns:1fr 1fr;background:${i%2===0?'#edfaf3':'#fff'}">
-            <div style="padding:7px;border-right:2.5px solid ${act.color}20">
-              <div style="font-size:11.5px;color:#5bc4e8;font-weight:700;padding:0 4px 3px;font-family:'Poppins',sans-serif">Hak ke-${i+1}: <span style="color:#6aaa82">${hints[0]}</span></div>
-              <input value="${esc(ans[act.hakKeys[i]]||'')}" placeholder="Tuliskan hakmu..." oninput="saveAns('${act.id}','${act.hakKeys[i]}',this.value)"
-                style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
-              ${feedbackChip(act.id,act.hakKeys[i],ans[act.hakKeys[i]]||'')}
-            </div>
-            <div style="padding:7px">
-              <div style="font-size:11.5px;color:#e8913d;font-weight:700;padding:0 4px 3px;font-family:'Poppins',sans-serif">Kewajiban ke-${i+1}: <span style="color:#6aaa82">${hints[1]}</span></div>
-              <input value="${esc(ans[act.kwjbKeys[i]]||'')}" placeholder="Tuliskan kewajibanmu..." oninput="saveAns('${act.id}','${act.kwjbKeys[i]}',this.value)"
-                style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
-              ${feedbackChip(act.id,act.kwjbKeys[i],ans[act.kwjbKeys[i]]||'')}
-            </div>
-          </div>`).join('')}
+      <div style="background:${act.color};border-radius:14px;padding:12px 16px">
+        <div style="color:#fff;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif">🌿 A. Peran & Tanggung Jawab Warga Sekolah</div>
       </div>
+      ${act.tableRows.flatMap(r=>[
+        renderRow(r.role+'_peran', r.peranQ, r.peranOpts, r.peranCorrect),
+        renderRow(r.role+'_tanggung', r.tanggungQ, r.tanggungOpts, r.tanggungCorrect),
+      ]).join('')}
+      <div style="background:${act.color};border-radius:14px;padding:12px 16px">
+        <div style="color:#fff;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif">🌻 B. Hak Siswa di Sekolah</div>
+      </div>
+      ${act.hakQs.map(q=>renderRow(q.id,q.q,q.opts,q.correct)).join('')}
+      <div style="background:${act.color};border-radius:14px;padding:12px 16px">
+        <div style="color:#fff;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif">🌸 C. Kewajiban Siswa di Sekolah</div>
+      </div>
+      ${act.kwjbQs.map(q=>renderRow(q.id,q.q,q.opts,q.correct)).join('')}
+      <button class="btn-press" onclick="checkMc('${act.id}')"
+        style="background:${act.color};color:#fff;border:none;border-radius:16px;padding:14px 30px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}50;margin-top:4px">
+        Cek Jawaban ✓
+      </button>
+      ${(()=>{const checked=state.mcChecked[act.id]||false;const sc=calcScore(act.id);return checked?`<div style="background:${sc.pct>=80?'#c8f0d8':sc.pct>=60?'#fff3cc':'#ffd6d6'};border-radius:16px;padding:15px 18px;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${sc.pct>=80?'#2d8a52':sc.pct>=60?'#c97a00':'#c93030'}50;display:flex;align-items:center;gap:14px">${progressRing(sc.pct,sc.pct>=80?'#2d8a52':sc.pct>=60?'#c97a00':'#c93030',52)}<div><div style="font-size:17px">Nilai: ${sc.pct}</div><div style="font-size:14px;margin-top:3px">${sc.pct>=80?'🎉 Luar biasa!':sc.pct>=60?'👍 Bagus!':'💪 Yuk coba lagi!'}</div></div></div>`:'';})()}
       ${nilaiBadge(act.id)}
     </div>`;
 }
@@ -828,33 +800,34 @@ function renderLkpdRulesMatching(act){
   const sel=state.matchingSel[act.id]||{};
   const checked=state.matchingChecked[act.id]||false;
   const score=act.matching.pairs.filter((p,i)=>sel[i]===p.correct).length;
+  let qNum=0;
   return `
-    <div>
-      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:16px">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25">
         <div style="width:50px;flex-shrink:0">${SVG.bird}</div>
-        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐦 <b style="color:${act.color}">Biru si Burung bilang:</b> "Tuliskan peraturan di sekolahmu, lalu cocokkan norma yang tepat!"</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐦 <b style="color:${act.color}">Biru bilang:</b> "Jawab soal peraturan, lalu cocokkan norma dengan contohnya!"</div>
       </div>
-      <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌿 A. Lima Peraturan di Sekolahku</div>
-      <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px">
-        ${act.ruleKeys.map((k,i)=>`
-          <div style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 2px 10px rgba(45,138,82,.09);border:2.5px solid ${act.color}30">
-            <div style="width:32px;height:32px;border-radius:10px;background:${act.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;font-family:'Poppins',sans-serif">${i+1}</div>
-            <input value="${esc(ans[k]||'')}" placeholder="Tuliskan peraturan..." oninput="saveAns('${act.id}','${k}',this.value)"
-              style="flex:1;border:2px solid ${act.color}35;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;background:#f4fdf7;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
-          </div>`).join('')}
+      <div style="background:#fff8dc;border-radius:14px;padding:12px 16px;border:2px solid #f9c84660;font-size:14px;color:#4a2d00;font-weight:700;margin-bottom:4px">
+        📌 <b>Petunjuk:</b> Bagian A — pilih jawaban yang benar. Bagian B — pilih huruf yang cocok untuk setiap norma, lalu tekan <b>Cek Cocokkan</b>!
       </div>
-      <div style="font-weight:800;color:#0f2d1a;margin-bottom:10px;font-size:16px;font-family:'Poppins',sans-serif">🌻 B. Cocokkan Norma dengan Contohnya!</div>
-      <div style="background:linear-gradient(135deg,#c8f0d8,#cceeff);border-radius:18px;padding:16px;margin-bottom:14px;border:2.5px solid #c8e6d4">
+      <div style="background:${act.color};border-radius:14px;padding:12px 16px">
+        <div style="color:#fff;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif">🌿 A. Soal Peraturan</div>
+      </div>
+      ${act.mcQs.map(q=>{ qNum++; return renderMcQ(act.id,q,act.color,qNum); }).join('')}
+      <div style="background:${act.color};border-radius:14px;padding:12px 16px;margin-top:4px">
+        <div style="color:#fff;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif">🌻 B. Cocokkan Norma dengan Contohnya!</div>
+      </div>
+      <div style="background:linear-gradient(135deg,#c8f0d8,#cceeff);border-radius:18px;padding:16px;border:2.5px solid #c8e6d4">
         <div style="font-weight:800;font-size:14px;color:#0f2d1a;margin-bottom:12px;font-family:'Poppins',sans-serif">📌 Pilihan Jawaban:</div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
           ${act.matching.choices.map(c=>`
             <div style="background:#fff;border-radius:12px;padding:11px 13px;font-size:14px;display:flex;gap:9px;align-items:center;box-shadow:0 2px 8px rgba(45,138,82,.1);border:2px solid #c8e6d4">
               <span style="background:${act.color};color:#fff;border-radius:8px;padding:3px 11px;font-weight:800;font-size:14px;flex-shrink:0;font-family:'Poppins',sans-serif">${c.letter}</span>
-              <span style="color:#0f2d1a;font-weight:700;font-size:15px;line-height:1.5">${c.text}</span>
+              <span style="color:#0f2d1a;font-weight:700;font-size:14px;line-height:1.5">${c.text}</span>
             </div>`).join('')}
         </div>
       </div>
-      <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px">
+      <div style="display:flex;flex-direction:column;gap:9px">
         ${act.matching.pairs.map((pair,i)=>{
           const ok=checked&&sel[i]===pair.correct;
           const bad=checked&&sel[i]&&sel[i]!==pair.correct;
@@ -866,47 +839,46 @@ function renderLkpdRulesMatching(act){
               <option value="">Pilih...</option>
               ${act.matching.choices.map(c=>`<option value="${c.letter}" ${sel[i]===c.letter?'selected':''}>${c.letter}</option>`).join('')}
             </select>
-            ${ok?`<span style="font-size:24px">✅</span>`:''}
-            ${bad?`<span style="font-size:24px">❌</span>`:''}
+            ${ok?`<span style="font-size:22px">✅</span>`:bad?`<span style="font-size:22px">❌</span>`:''}
           </div>`;
         }).join('')}
       </div>
       <button class="btn-press" onclick="checkMatching('${act.id}')"
         style="background:${act.color};color:#fff;border:none;border-radius:16px;padding:14px 30px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}50">
-        Cek Jawaban ✓
+        Cek Cocokkan ✓
       </button>
-      ${checked?`
-        <div style="margin-top:14px;background:${score===4?'#c8f0d8':'#fff3cc'};border-radius:16px;padding:15px 18px;font-weight:800;color:${score===4?'#0f3d1f':'#4a2d00'};font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${score===4?'#2d8a52':'#c97a00'}50">
-          ${score===4?'🎉 Semua benar! Luar biasa!':score>=2?`👍 ${score}/4 benar. Hampir sempurna!`:`💪 ${score}/4 benar. Coba lagi ya!`}
-        </div>`:''}
+      ${checked?`<div style="background:${score===4?'#c8f0d8':'#fff3cc'};border-radius:16px;padding:15px 18px;font-weight:800;color:${score===4?'#0f3d1f':'#4a2d00'};font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${score===4?'#2d8a52':'#c97a00'}50">
+        ${score===4?'🎉 Semua cocokkan benar! Luar biasa!':score>=2?`👍 ${score}/4 benar. Hampir sempurna!`:`💪 ${score}/4 benar. Coba lagi ya!`}
+      </div>`:''}
       ${nilaiBadge(act.id)}
     </div>`;
 }
 
-function renderLkpdScenario(act){
-  const ans=getAns(act.id);
+function renderLkpdMcScenario(act){
   return `
     <div style="display:flex;flex-direction:column;gap:18px">
-      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:4px">
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25">
         <div style="width:50px;flex-shrink:0">${SVG.frog}</div>
-        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐸 <b style="color:${act.color}">Koko si Katak bilang:</b> "Bayangkan kamu ada di situasi ini. Apa yang akan kamu lakukan?"</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐸 <b style="color:${act.color}">Koko bilang:</b> "Baca situasinya, lalu pilih tindakan yang paling tepat!"</div>
       </div>
-      ${act.scenarios.map((s)=>`
+      <div style="background:#fff8dc;border-radius:14px;padding:12px 16px;border:2px solid #f9c84660;font-size:14px;color:#4a2d00;font-weight:700;margin-bottom:4px">
+        📌 <b>Petunjuk:</b> Baca cerita situasinya dengan teliti, lalu pilih tindakan yang paling baik dan tepat!
+      </div>
+      ${act.scenarios.map((s,i)=>`
         <div style="border-radius:20px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.1);border:2.5px solid ${act.color}35">
           <div style="background:${act.color}18;border-left:6px solid ${act.color};padding:15px 18px">
-            <div style="font-weight:800;color:${act.color};margin-bottom:8px;font-size:14px;font-family:'Poppins',sans-serif">🌿 ${s.label}</div>
+            <div style="font-weight:800;color:${act.color};margin-bottom:6px;font-size:14px;font-family:'Poppins',sans-serif">🌿 ${s.label}</div>
             <div style="color:#0f2d1a;font-size:15px;line-height:1.8;font-weight:700">${s.text}</div>
           </div>
           <div style="background:#fff;padding:15px 18px">
-            <div style="font-weight:800;color:#0f2d1a;margin-bottom:10px;font-size:14.5px;font-family:'Poppins',sans-serif">❓ ${s.q}</div>
-            <textarea rows="3" placeholder="✍️ Tuliskan responmu..."
-              oninput="saveAns('${act.id}','${s.id}',this.value)"
-              onfocus="this.style.borderColor='${act.color}'"
-              onblur="this.style.borderColor='${act.color}40'"
-              style="width:100%;border:2.5px solid ${act.color}40;border-radius:14px;padding:12px 14px;font-size:14.5px;resize:vertical;outline:none;background:#f4fdf7;line-height:1.75;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[s.id]||'')}</textarea>
-            ${feedbackChip(act.id,s.id,ans[s.id]||'')}
+            ${renderMcQ(act.id,s,act.color,i+1)}
           </div>
         </div>`).join('')}
+      <button class="btn-press" onclick="checkMc('${act.id}')"
+        style="background:${act.color};color:#fff;border:none;border-radius:16px;padding:14px 30px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}50">
+        Cek Jawaban ✓
+      </button>
+      ${(()=>{const checked=state.mcChecked[act.id]||false;const sc=calcScore(act.id);const ans=state.lkpdAnswers[act.id]||{};const correct=act.scenarios.filter(s=>ans[s.id]===s.correct).length;return checked?`<div style="background:${sc.pct>=80?'#c8f0d8':sc.pct>=60?'#fff3cc':'#ffd6d6'};border-radius:16px;padding:15px 18px;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${sc.pct>=80?'#2d8a52':sc.pct>=60?'#c97a00':'#c93030'}50;display:flex;align-items:center;gap:14px">${progressRing(sc.pct,sc.pct>=80?'#2d8a52':sc.pct>=60?'#c97a00':'#c93030',52)}<div><div style="font-size:17px">${correct}/${act.scenarios.length} benar</div><div style="font-size:14px;margin-top:3px">${sc.pct>=80?'🎉 Luar biasa!':sc.pct>=60?'👍 Bagus!':'💪 Yuk coba lagi!'}</div></div></div>`:'';})()}
       ${nilaiBadge(act.id)}
     </div>`;
 }
@@ -919,7 +891,10 @@ function renderLkpdEvaluation(act){
     <div>
       <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:16px">
         <div style="width:50px;flex-shrink:0">${SVG.bee}</div>
-        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐝 <b style="color:${act.color}">Beby si Lebah bilang:</b> "Ini soal terakhir! Jawab dengan jujur sesuai yang kamu pahami ya!"</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐝 <b style="color:${act.color}">Beby bilang:</b> "Ini soal terakhir! Jawab dengan jujur sesuai yang kamu pahami ya!"</div>
+      </div>
+      <div style="background:#fff8dc;border-radius:14px;padding:12px 16px;border:2px solid #f9c84660;font-size:14px;color:#4a2d00;font-weight:700;margin-bottom:16px">
+        📌 <b>Petunjuk:</b> Bagian A — tekan ✅ Setuju atau ❌ Tidak untuk setiap pernyataan, lalu tekan <b>Cek Jawaban</b>. Bagian B — tulis refleksimu dengan bebas!
       </div>
       <div style="font-weight:800;color:#0f2d1a;margin-bottom:14px;font-size:16px;font-family:'Poppins',sans-serif">🌿 A. Setuju atau Tidak Setuju?</div>
       <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
@@ -964,7 +939,6 @@ function renderLkpdEvaluation(act){
               onfocus="this.style.borderColor='#c97a00'"
               onblur="this.style.borderColor='#c97a0050'"
               style="width:100%;border:2.5px solid #c97a0050;border-radius:14px;padding:12px 14px;font-size:14.5px;resize:vertical;outline:none;background:#fff;line-height:1.75;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[r.id]||'')}</textarea>
-            ${feedbackChip(act.id, r.id, ans[r.id]||'')}
           </div>`).join('')}
       </div>
       ${nilaiBadge(act.id)}
@@ -972,14 +946,13 @@ function renderLkpdEvaluation(act){
 }
 
 function renderLkpdActivity(act){
-  if(act.type==='essay') return renderLkpdEssay(act);
-  if(act.type==='table-fill') return renderLkpdTableFill(act);
+  if(act.type==='mc') return renderLkpdMc(act);
+  if(act.type==='mc-table') return renderLkpdMcTable(act);
   if(act.type==='rules-matching') return renderLkpdRulesMatching(act);
-  if(act.type==='scenario') return renderLkpdScenario(act);
+  if(act.type==='mc-scenario') return renderLkpdMcScenario(act);
   if(act.type==='evaluation') return renderLkpdEvaluation(act);
   return '';
 }
-
 // ── PAGES ──
 function renderHome(){
   return `
@@ -1161,8 +1134,11 @@ function renderCover(){
             <p style="color:#7dd3fc;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📊 PANDUAN PENILAIAN</p>
             <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
               ${[
-                ['LKPD 1, 2, 4','Essay, Isian & Skenario','Otomatis (0–100)','Dihitung sistem dari panjang jawaban & kata kunci penting. Guru tetap memeriksa kesesuaiannya.'],
-                ['LKPD 3','Cocokkan Norma','4 soal × 25 = 100','Jawaban otomatis dicek oleh sistem'],
+                ['LKPD 1','Pilihan Ganda (5 soal)','5 soal × 20 = 100','Jawaban benar otomatis dicek sistem'],
+                ['LKPD 2','Pilihan Ganda (8 soal)','8 soal × 12,5 = 100','Jawaban benar otomatis dicek sistem'],
+                ['LKPD 3','PG + Cocokkan Norma (7 soal)','7 soal × 14,3 = 100','Jawaban benar otomatis dicek sistem'],
+                ['LKPD 4','Pilihan Ganda Skenario (4 soal)','4 soal × 25 = 100','Jawaban benar otomatis dicek sistem'],
+                ['LKPD 5','Benar/Salah (8) + Refleksi (4)','70% benar/salah + 30% refleksi','Soal otomatis; refleksi dinilai dari kelengkapan'],
                 ['LKPD 5','Setuju/Tidak','8 soal × 12,5 = 100','Jawaban otomatis dicek oleh sistem'],
               ].map(([lkpd,tipe,skor,ket])=>`
                 <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;border:1px solid rgba(255,255,255,.12)">
@@ -1640,6 +1616,16 @@ function setTabActive(bid,idx,scrollId){
   render();
   setTimeout(()=>{const sc2=scrollId?document.getElementById(scrollId):null;if(sc2)sc2.scrollTop=top;},0);
 }
+function saveMcAns(actId,key,letter){
+  if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
+  state.lkpdAnswers[actId][key]=letter;
+  lsSave();
+  // Re-render the activity page so selection highlights update
+  const sc=document.getElementById('content-scroll');
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=document.getElementById('content-scroll');if(sc2)sc2.scrollTop=top;},0);
+}
 function saveAns(actId,key,val){
   if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
   state.lkpdAnswers[actId][key]=val;
@@ -1647,9 +1633,6 @@ function saveAns(actId,key,val){
   // Update nilai badge live without full re-render
   const badge = document.getElementById('nilai-badge-'+actId);
   if(badge){ const pct=calcScore(actId).pct; const c=scoreColor(pct); badge.outerHTML=nilaiBadgeEl(actId,pct,c); }
-  // Update chip feedback per soal
-  const fb = document.getElementById('fb-'+actId+'-'+key);
-  if(fb){ fb.outerHTML = feedbackChip(actId,key,val); }
   updateLkpdHomeBadge(actId);
 }
 function setMatchingSel(actId,idx,letter){
@@ -1658,6 +1641,14 @@ function setMatchingSel(actId,idx,letter){
   state.matchingChecked[actId]=false;
   if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
   state.lkpdAnswers[actId]['__matching']={...state.matchingSel[actId]};
+  lsSave();
+  const sc=document.getElementById('content-scroll');
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=document.getElementById('content-scroll');if(sc2)sc2.scrollTop=top;},0);
+}
+function checkMc(actId){
+  state.mcChecked[actId]=true;
   lsSave();
   const sc=document.getElementById('content-scroll');
   const top=sc?sc.scrollTop:0;
@@ -1800,71 +1791,84 @@ function printPage(){
         <tr><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:700;background:#edfaf3">📅 Tanggal Lahir</td><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:600">${tgl ? (()=>{try{const d=new Date(tgl);return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});}catch(e){return tgl;}})() : '____________________________'}</td></tr>
       </table>`;
 
-  // LKPD 1 - Essay
+  // LKPD 1 - Pilihan Ganda
   body += `<div style="margin-bottom:28px;page-break-inside:avoid">
     <h3 style="background:#2d8a52;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🤝 Kegiatan 1 – Aku dan Interaksi Sosialku</h3>`;
-  LKPD_ACTIVITIES[0].questions.forEach(q=>{
-    const a = (ans['L1']||{})[q.id]||'';
-    body += `<div style="margin-bottom:14px">
-      <p style="font-weight:700;font-size:14px;margin:0 0 6px;color:#1a5c35">${q.num}. ${q.text}</p>
-      <div style="border:1.5px solid #c8e6d4;border-radius:8px;padding:10px 14px;min-height:60px;font-size:14px;background:#f4fdf7;color:#0f2d1a;line-height:1.7">${a||'<span style="color:#aaa">Belum dijawab</span>'}</div>
+  const l1ans=ans['L1']||{};
+  LKPD_ACTIVITIES[0].questions.forEach((q,i)=>{
+    const chosen=l1ans[q.id];
+    const ok=chosen===q.correct;
+    body+=`<div style="margin-bottom:10px;padding:10px 14px;border-radius:10px;background:${ok?'#edfaf3':'#fff'};border:1.5px solid ${ok?'#2d8a52':'#c8e6d4'}">
+      <p style="font-weight:700;font-size:14px;margin:0 0 6px;color:#1a5c35">${i+1}. ${q.text}</p>
+      ${q.opts.map(o=>{
+        const l=o[0]; const isSel=chosen===l; const isOk=l===q.correct;
+        return `<span style="display:inline-block;margin:2px 4px;padding:4px 10px;border-radius:8px;font-size:13px;font-weight:700;background:${isOk?'#c8f0d8':isSel?'#ffd6d6':'#f0f0f0'};color:${isOk?'#0f3d1f':isSel?'#8b0000':'#333'};border:1.5px solid ${isOk?'#2d8a52':isSel?'#c93030':'#ddd'}">${o}${isSel&&!ok?' ❌':''}${isOk?' ✅':''}</span>`;
+      }).join('')}
     </div>`;
   });
-  body += `</div>`;
+  body+=`</div>`;
 
-  // LKPD 2 - Table
+  // LKPD 2 - Pilihan Ganda Tabel
   body += `<div style="margin-bottom:28px;page-break-inside:avoid">
-    <h3 style="background:#5bc4e8;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🏫 Kegiatan 2 – Peran dan Tanggung Jawabku</h3>
-    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">A. Tabel Peran Warga Sekolah:</p>
-    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:16px">
-      <tr style="background:#5bc4e8;color:#fff"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Warga Sekolah</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Peran/Tugas</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Tanggung Jawab</td></tr>`;
-  [['Siswa','siswa_peran','siswa_tanggung'],['Guru','guru_peran','guru_tanggung'],['Kepala Sekolah','kepsek_peran','kepsek_tanggung']].forEach(([r,k1,k2])=>{
-    body += `<tr><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700;background:#edfaf3">${r}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${(ans['L2']||{})[k1]||'–'}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${(ans['L2']||{})[k2]||'–'}</td></tr>`;
-  });
-  body += `</table>
-    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">B. Hak dan Kewajiban sebagai Siswa:</p>
-    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:4px">
-      <tr style="background:#5bc4e8;color:#fff"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Hak Saya</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Kewajiban Saya</td></tr>`;
-  const l2ans=ans['L2']||{};
-  ['hak1','hak2','hak3','hak4'].forEach((hk,i)=>{
-    const kwk=['kw1','kw2','kw3','kw4'][i];
-    body += `<tr style="background:${i%2===0?'#edfaf3':'#fff'}"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${l2ans[hk]||'–'}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${l2ans[kwk]||'–'}</td></tr>`;
-  });
-  body += `</table></div>`;
+    <h3 style="background:#5bc4e8;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🏫 Kegiatan 2 – Peran dan Tanggung Jawabku</h3>`;
+  const l2a=ans['L2']||{};
+  const renderPdfMcSection=(title,qs)=>{
+    body+=`<p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">${title}</p>`;
+    qs.forEach((q,i)=>{
+      const chosen=l2a[q.id]; const ok=chosen===q.correct;
+      body+=`<div style="margin-bottom:8px;padding:9px 12px;border-radius:9px;background:${ok?'#edfaf3':'#fff'};border:1.5px solid ${ok?'#2d8a52':'#c8e6d4'}">
+        <p style="font-size:13px;font-weight:700;margin:0 0 5px;color:#1a5c35">${i+1}. ${q.q}</p>
+        ${q.opts.map(o=>{const l=o[0];const isSel=chosen===l;const isOk=l===q.correct;return `<span style="display:inline-block;margin:2px 3px;padding:3px 8px;border-radius:7px;font-size:12px;font-weight:700;background:${isOk?'#c8f0d8':isSel?'#ffd6d6':'#f0f0f0'};color:${isOk?'#0f3d1f':isSel?'#8b0000':'#333'};border:1.5px solid ${isOk?'#2d8a52':isSel?'#c93030':'#ddd'}">${o}${isOk?' ✅':''}</span>`;}).join('')}
+      </div>`;
+    });
+  };
+  const act2=LKPD_ACTIVITIES[1];
+  const tblQs=act2.tableRows.flatMap(r=>[{id:r.role+'_peran',q:r.peranQ,opts:r.peranOpts,correct:r.peranCorrect},{id:r.role+'_tanggung',q:r.tanggungQ,opts:r.tanggungOpts,correct:r.tanggungCorrect}]);
+  renderPdfMcSection('A. Peran & Tanggung Jawab Warga Sekolah',tblQs);
+  renderPdfMcSection('B. Hak Siswa di Sekolah',act2.hakQs);
+  renderPdfMcSection('C. Kewajiban Siswa di Sekolah',act2.kwjbQs);
+  body+=`</div>`;
 
-  // LKPD 3 - Rules
+  // LKPD 3 - Pilihan Ganda + Cocokkan Norma
   body += `<div style="margin-bottom:28px;page-break-inside:avoid">
     <h3 style="background:#e8913d;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">📋 Kegiatan 3 – Aturan di Sekitarku</h3>
-    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">A. Lima Peraturan di Sekolahku:</p>`;
-  ['r1','r2','r3','r4','r5'].forEach((k,i)=>{
-    body += `<p style="font-size:14px;margin:0 0 6px;padding:8px 12px;background:#fdf0e0;border-radius:8px;border-left:4px solid #e8913d"><b>${i+1}.</b> ${(ans['L3']||{})[k]||'____________________________'}</p>`;
+    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">A. Soal Peraturan:</p>`;
+  const l3ans=ans['L3']||{};
+  LKPD_ACTIVITIES[2].mcQs.forEach((q,i)=>{
+    const chosen=l3ans[q.id]; const ok=chosen===q.correct;
+    body+=`<div style="margin-bottom:8px;padding:9px 12px;border-radius:9px;background:${ok?'#edfaf3':'#fff'};border:1.5px solid ${ok?'#2d8a52':'#c8e6d4'}">
+      <p style="font-size:13px;font-weight:700;margin:0 0 5px;color:#1a5c35">${i+1}. ${q.q}</p>
+      ${q.opts.map(o=>{const l=o[0];const isSel=chosen===l;const isOk=l===q.correct;return `<span style="display:inline-block;margin:2px 3px;padding:3px 8px;border-radius:7px;font-size:12px;font-weight:700;background:${isOk?'#c8f0d8':isSel?'#ffd6d6':'#f0f0f0'};color:${isOk?'#0f3d1f':isSel?'#8b0000':'#333'};border:1.5px solid ${isOk?'#2d8a52':isSel?'#c93030':'#ddd'}">${o}${isOk?' ✅':''}</span>`;}).join('')}
+    </div>`;
   });
-  const sel = state.matchingSel['L3']||{};
-  const pairs = LKPD_ACTIVITIES[2].matching.pairs;
-  body += `<p style="font-weight:700;font-size:14px;color:#1a5c35;margin:12px 0 8px">B. Cocokkan Norma:</p>
+  const sel=state.matchingSel['L3']||{};
+  const pairs=LKPD_ACTIVITIES[2].matching.pairs;
+  body+=`<p style="font-weight:700;font-size:14px;color:#1a5c35;margin:10px 0 8px">B. Cocokkan Norma:</p>
     <table style="width:100%;border-collapse:collapse;font-size:14px">
-      <tr style="background:#e8913d;color:#fff"><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Norma</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Jawaban</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Benar/Salah</td></tr>`;
+      <tr style="background:#e8913d;color:#fff"><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Norma</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Jawaban</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Hasil</td></tr>`;
   pairs.forEach((p,i)=>{
-    const ok = sel[i]===p.correct;
-    body += `<tr><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:600">${p.norma}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4">${sel[i]||'–'}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;color:${ok?'#2d8a52':'#c93030'};font-weight:700">${sel[i]?(ok?'✅ Benar':'❌ Salah'):'–'}</td></tr>`;
+    const ok=sel[i]===p.correct;
+    body+=`<tr><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:600">${p.norma}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4">${sel[i]||'–'}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;color:${ok?'#2d8a52':'#c93030'};font-weight:700">${sel[i]?(ok?'✅ Benar':'❌ Salah'):'–'}</td></tr>`;
   });
-  body += `</table></div>`;
+  body+=`</table></div>`;
 
-  // LKPD 4 - Scenario
+  // LKPD 4 - Pilihan Ganda Skenario
   body += `<div style="margin-bottom:28px;page-break-inside:avoid">
     <h3 style="background:#8b5cf6;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">💡 Kegiatan 4 – Interaksi Sosial Positif</h3>`;
-  LKPD_ACTIVITIES[3].scenarios.forEach(s=>{
-    body += `<div style="margin-bottom:14px;border:1.5px solid #c8e6d4;border-radius:10px;overflow:hidden">
-      <div style="background:#8b5cf618;padding:10px 14px;border-left:4px solid #8b5cf6">
-        <b style="color:#8b5cf6;font-size:14px">${s.label}:</b> <span style="font-size:14px">${s.text}</span>
+  const l4ans=ans['L4']||{};
+  LKPD_ACTIVITIES[3].scenarios.forEach((s,i)=>{
+    const chosen=l4ans[s.id]; const ok=chosen===s.correct;
+    body+=`<div style="margin-bottom:12px;border:1.5px solid ${ok?'#8b5cf6':'#c8e6d4'};border-radius:10px;overflow:hidden">
+      <div style="background:#8b5cf618;padding:8px 12px;border-left:4px solid #8b5cf6">
+        <b style="color:#8b5cf6;font-size:13px">${s.label}:</b> <span style="font-size:13px">${s.text}</span>
       </div>
-      <div style="padding:10px 14px;font-size:14px">
-        <b style="color:#1a5c35">Jawaban:</b><br>
-        <span style="color:#0f2d1a;line-height:1.7">${(ans['L4']||{})[s.id]||'<span style="color:#aaa">Belum dijawab</span>'}</span>
+      <div style="padding:8px 12px">
+        <p style="font-size:13px;font-weight:700;margin:0 0 5px;color:#1a5c35">${s.q}</p>
+        ${s.opts.map(o=>{const l=o[0];const isSel=chosen===l;const isOk=l===s.correct;return `<span style="display:inline-block;margin:2px 3px;padding:3px 8px;border-radius:7px;font-size:12px;font-weight:700;background:${isOk?'#ede0ff':isSel?'#ffd6d6':'#f0f0f0'};color:${isOk?'#4a0a8b':isSel?'#8b0000':'#333'};border:1.5px solid ${isOk?'#8b5cf6':isSel?'#c93030':'#ddd'}">${o}${isOk?' ✅':''}</span>`;}).join('')}
       </div>
     </div>`;
   });
-  body += `</div>`;
+  body+=`</div>`;
 
   // LKPD 5 - Evaluation
   const evalAns = ans['L5']||{};
